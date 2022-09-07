@@ -1,6 +1,6 @@
 import time
 import os
-
+from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
@@ -13,13 +13,13 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "superlists.settings")
 django.setup()
 from lists.models import Item
 
-class NewVistorTest(unittest.TestCase):
+class NewVistorTest(LiveServerTestCase):
     def setUp(self):
         service = Service('d://chromedriver')
         option = webdriver.ChromeOptions()
         self.browser = webdriver.Chrome(service=service, options=option)
         #self. = self.driver
-        self.url = "http://127.0.0.1:8000/"
+        self.url = self.live_server_url
 
     def tearDown(self):
         self.browser.quit()
