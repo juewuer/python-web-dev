@@ -31,6 +31,8 @@ class HomePageTest(TestCase):
         # failed for csrf
         # self.assertEqual(response.content.decode(), render_to_string('home.html'))
 
+    """
+    # move to NewListTest
     def test_0002_home_page_can_save_a_post_request(self):
         request = HttpRequest()
         request.method = 'POST'
@@ -42,6 +44,7 @@ class HomePageTest(TestCase):
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item')
 
+    # move to NewListTest
     def test_0003_home_page_redirect_after_post(self):
         request = HttpRequest()
         request.method = 'POST'
@@ -57,6 +60,7 @@ class HomePageTest(TestCase):
         # print(f'{type(content.decode()) = }')
         # print(f'{content.decode() = }')
         self.assertEqual(content[:100], expected_html[:100])
+    """
 
     def test_0004_home_page_displays_all_list_item(self):
         Item.objects.create(text='itemey 1')
@@ -94,3 +98,35 @@ class ItemModelTest(TestCase):
 
         items = Item.objects.all()
         assert items.count() == 2
+
+
+class NewListTest(TestCase):
+    """
+    def test_0002_home_page_can_save_a_post_request(self):
+        request = HttpRequest()
+        request.method = 'POST'
+        request.POST['item_text'] = 'A new list item'
+        response = home_page(request)
+
+        self.assertEqual(Item.objects.count(), 1)
+
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'A new list item')
+
+
+    """
+
+    def test_saving_a_POST_request(self):
+
+        print(f'Before post')
+        self.client.post('/lists/new', data = {'item_text': 'A new list item'})
+
+        print(f'{Item.objects.count()}, {Item.objects =}')
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'A new list item')
+
+    def test_0003_home_page_redirect_after_post(self):
+        response = self.client.post('/lists/new', data = {'item_text': 'A new list item'})
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], '/lists/all/')
