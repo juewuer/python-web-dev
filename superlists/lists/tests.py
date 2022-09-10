@@ -4,7 +4,7 @@ from django.http import HttpRequest
 from django.template.loader import render_to_string
 
 from lists.views import home_page, view_list
-from lists.models import Item
+from lists.models import Item, List
 
 
 # Create your tests here.
@@ -63,8 +63,9 @@ class HomePageTest(TestCase):
     """
 
     def test_0004_home_page_displays_all_list_item(self):
-        Item.objects.create(text='itemey 1')
-        Item.objects.create(text='itemey 2')
+        list_ = List.objects.create()
+        Item.objects.create(text='itemey 1', list = list_)
+        Item.objects.create(text='itemey 2', list = list_)
         request = HttpRequest()
         response = view_list(request)
         self.assertIn('itemey 1', response.content.decode())
@@ -78,44 +79,41 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response, 'list.html')
 
     def test_display_all_items(self):
-        Item.objects.create(text="itemey 1")
-        Item.objects.create(text="itemey 2")
+        list_ = List.objects.create()
+        Item.objects.create(text='itemey 1', list = list_)
+        Item.objects.create(text='itemey 2', list = list_)
         response = self.client.get("/lists/all/")
 
         self.assertContains(response, 'itemey 1')
         self.assertContains(response, 'itemey 2')
 
 
-class ItemModelTest(TestCase):
+class ListAndItemModelTest(TestCase):
     def test_0001_saving_and_retrieving_items(self):
+        list_ = List()
+        list_.save()
         first_item = Item()
         first_item.text = 'The first list item'
+        first_item.list = list_
         first_item.save()
 
         item = Item()
         item.text = 'The second list item'
+        item.list = list_
         item.save()
+
+        saved_list= List.objects.first()
+        self.assertEqual(saved_list, list_)
 
         items = Item.objects.all()
         assert items.count() == 2
 
+        first = items[0]
+        second = items[1]
+        self.assertEqual(first.list, list_)
+        self.assertEqual(second.list, list_)
 
 class NewListTest(TestCase):
-    """
-    def test_0002_home_page_can_save_a_post_request(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['item_text'] = 'A new list item'
-        response = home_page(request)
-
-        self.assertEqual(Item.objects.count(), 1)
-
-        new_item = Item.objects.first()
-        self.assertEqual(new_item.text, 'A new list item')
-
-
-    """
-
     def test_saving_a_POST_request(self):
 
         print(f'Before post')

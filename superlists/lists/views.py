@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from lists.models import Item
+from lists.models import Item, List
 
 
 # Create your views here.
@@ -12,8 +12,10 @@ def view_list(request):
     items = Item.objects.all()
     return render(request, 'list.html', {'items': items})
 
+
 def new_list(request):
-    res = Item.objects.create(text= request.POST["item_text"])
+    list_ = List.objects.create()
+    res = Item.objects.create(text=request.POST["item_text"], list=list_)
     print(f'{res =}')
     print(f'{Item.objects.count() = }')
     return redirect('/lists/all/')
