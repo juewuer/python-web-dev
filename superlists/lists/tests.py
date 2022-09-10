@@ -76,6 +76,12 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'itemey 1')
         self.assertContains(response, 'itemey 2')
 
+    def test_0005_passes_correst_list_to_templeate(self):
+        list2 = List.objects.create()
+        list1 = List.objects.create()
+        response = self.client.get(f'/lists/{list1.id}/')
+        self.assertEqual(response.context['list'], list1)
+
 
 class ListAndItemModelTest(TestCase):
     def test_0001_saving_and_retrieving_items(self):
@@ -118,3 +124,19 @@ class NewListTest(TestCase):
         list_ = List.objects.first()
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['location'], f'/lists/{list_.id}/')
+
+class NewItemTest(TestCase):
+    def test_0001_can_save_a_POST_request_to_an_existing_list(self):
+        list2 = List.objects.create()
+        list1 = List.objects.create()
+        response = self.client.post(f'/lists/{list1.id}/add_item', data={'item_text': 'A new list item for existing list'})
+        self.assertEqual(Item.objects.count(), 1)
+        new_item = Item.objects.first()
+        self.assertEqual(new_item.text, 'A new list item for existing list')
+        self.assertEqual(new_item.list, list1)
+
+    def test_0002_redirect_to_list_view(self):
+        list2 = List.objects.create()
+        list1 = List.objects.create()
+        response = self.client.post(f'/lists/{list1.id}/add_item', data={'item_text': 'A new list item for existing list'})
+        self.assertRedirects(response, f'/lists/{list1.id}/')

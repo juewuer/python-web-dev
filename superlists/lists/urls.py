@@ -4,5 +4,6 @@ from lists import views
 urlpatterns = [
     path('all/', views.view_list),
     path('new', views.new_list),
-    re_path(r'^(.*)/$', views.view_list),
+    re_path(r'^(\d*)/$', views.view_list),
+    re_path(r'^(\d*)/add_item$', views.add_item),
 ]
