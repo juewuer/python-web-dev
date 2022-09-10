@@ -31,41 +31,10 @@ class HomePageTest(TestCase):
         # failed for csrf
         # self.assertEqual(response.content.decode(), render_to_string('home.html'))
 
-    """
-    # move to NewListTest
-    def test_0002_home_page_can_save_a_post_request(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['item_text'] = 'A new list item'
-        response = home_page(request)
-
-        self.assertEqual(Item.objects.count(), 1)
-
-        new_item = Item.objects.first()
-        self.assertEqual(new_item.text, 'A new list item')
-
-    # move to NewListTest
-    def test_0003_home_page_redirect_after_post(self):
-        request = HttpRequest()
-        request.method = 'POST'
-        request.POST['item_text'] = 'A new list item'
-        response = home_page(request)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/lists/all/')
-        return
-
-        content = response.content.decode("utf-8-sig").encode('utf-8').decode()
-        self.assertTrue('A new list item' in content)
-        expected_html = render_to_string('home.html', {'new_item_text': 'A new list item'})
-        # print(f'{type(content.decode()) = }')
-        # print(f'{content.decode() = }')
-        self.assertEqual(content[:100], expected_html[:100])
-    """
-
     def test_0004_home_page_displays_all_list_item(self):
         list_ = List.objects.create()
-        Item.objects.create(text='itemey 1', list = list_)
-        Item.objects.create(text='itemey 2', list = list_)
+        Item.objects.create(text='itemey 1', list=list_)
+        Item.objects.create(text='itemey 2', list=list_)
         request = HttpRequest()
         response = view_list(request)
         self.assertIn('itemey 1', response.content.decode())
@@ -78,10 +47,30 @@ class ListViewTest(TestCase):
 
         self.assertTemplateUsed(response, 'list.html')
 
+    def test_002_users_list_template(self):
+        list_ = List.objects.create()
+        response = self.client.get(f'/lists/{list_.id}/')
+
+        self.assertTemplateUsed(response, 'list.html')
+
+    def test_0003_display_only_items_for_that_list(self):
+        list1 = List.objects.create()
+        Item.objects.create(text='itemey 1.1', list=list1)
+        Item.objects.create(text='itemey 1.2', list=list1)
+        list2 = List.objects.create()
+        Item.objects.create(text='itemey 2.1', list=list2)
+        Item.objects.create(text='itemey 2.2', list=list2)
+        response = self.client.get(f"/lists/{list1.id}/")
+
+        self.assertContains(response, 'itemey 1.1')
+        self.assertContains(response, 'itemey 1.2')
+        self.assertNotContains(response, 'itemey 2.1')
+        self.assertNotContains(response, 'itemey 2.2')
+
     def test_display_all_items(self):
         list_ = List.objects.create()
-        Item.objects.create(text='itemey 1', list = list_)
-        Item.objects.create(text='itemey 2', list = list_)
+        Item.objects.create(text='itemey 1', list=list_)
+        Item.objects.create(text='itemey 2', list=list_)
         response = self.client.get("/lists/all/")
 
         self.assertContains(response, 'itemey 1')
@@ -102,7 +91,7 @@ class ListAndItemModelTest(TestCase):
         item.list = list_
         item.save()
 
-        saved_list= List.objects.first()
+        saved_list = List.objects.first()
         self.assertEqual(saved_list, list_)
 
         items = Item.objects.all()
@@ -113,11 +102,11 @@ class ListAndItemModelTest(TestCase):
         self.assertEqual(first.list, list_)
         self.assertEqual(second.list, list_)
 
+
 class NewListTest(TestCase):
     def test_saving_a_POST_request(self):
-
         print(f'Before post')
-        self.client.post('/lists/new', data = {'item_text': 'A new list item'})
+        self.client.post('/lists/new', data={'item_text': 'A new list item'})
 
         print(f'{Item.objects.count()}, {Item.objects =}')
         self.assertEqual(Item.objects.count(), 1)
@@ -125,6 +114,7 @@ class NewListTest(TestCase):
         self.assertEqual(new_item.text, 'A new list item')
 
     def test_0003_home_page_redirect_after_post(self):
-        response = self.client.post('/lists/new', data = {'item_text': 'A new list item'})
+        response = self.client.post('/lists/new', data={'item_text': 'A new list item'})
+        list_ = List.objects.first()
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['location'], '/lists/all/')
+        self.assertEqual(response['location'], f'/lists/{list_.id}/')
