@@ -88,6 +88,12 @@ class NewVistorTest(LiveServerTestCase):
         assert "Buy peacock feathers" not in page_text
         assert "Use peacock feathers to make a fly" not in page_text
 
+    def test_0002_layout_and_styling(self):
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=10  )
+
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
