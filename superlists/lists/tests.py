@@ -30,7 +30,7 @@ class HomePageTest(TestCase):
         self.assertTrue(content.endswith(b"</html>"))
         # failed for csrf
         # self.assertEqual(response.content.decode(), render_to_string('home.html'))
-
+    '''
     def test_0004_home_page_displays_all_list_item(self):
         list_ = List.objects.create()
         Item.objects.create(text='itemey 1', list=list_)
@@ -39,13 +39,15 @@ class HomePageTest(TestCase):
         response = view_list(request)
         self.assertIn('itemey 1', response.content.decode())
         self.assertIn('itemey 2', response.content.decode())
-
+    '''
 
 class ListViewTest(TestCase):
+    '''
     def test_users_list_template(self):
         response = self.client.get('/lists/all/')
 
         self.assertTemplateUsed(response, 'list.html')
+    '''
 
     def test_002_users_list_template(self):
         list_ = List.objects.create()
@@ -66,7 +68,7 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'itemey 1.2')
         self.assertNotContains(response, 'itemey 2.1')
         self.assertNotContains(response, 'itemey 2.2')
-
+    """
     def test_display_all_items(self):
         list_ = List.objects.create()
         Item.objects.create(text='itemey 1', list=list_)
@@ -75,7 +77,7 @@ class ListViewTest(TestCase):
 
         self.assertContains(response, 'itemey 1')
         self.assertContains(response, 'itemey 2')
-
+    """
     def test_0005_passes_correst_list_to_templeate(self):
         list2 = List.objects.create()
         list1 = List.objects.create()
