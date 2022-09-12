@@ -63,6 +63,8 @@ class ListViewTest(TestCase):
         Item.objects.create(text='itemey 2.1', list=list2)
         Item.objects.create(text='itemey 2.2', list=list2)
         response = self.client.get(f"/lists/{list1.id}/")
+        content = response.content.decode("utf-8-sig").encode('utf-8')
+        print(f'{type(content) =}, {content}')
 
         self.assertContains(response, 'itemey 1.1')
         self.assertContains(response, 'itemey 1.2')
