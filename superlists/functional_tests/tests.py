@@ -1,6 +1,7 @@
 import time
 import os
 from django.test import LiveServerTestCase
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
@@ -15,7 +16,7 @@ django.setup()
 from lists.models import Item
 
 
-class NewVistorTest(LiveServerTestCase):
+class NewVistorTest(StaticLiveServerTestCase):
     def setUp(self):
         service = Service('d://chromedriver')
         option = webdriver.ChromeOptions()
@@ -91,6 +92,10 @@ class NewVistorTest(LiveServerTestCase):
     def test_0002_layout_and_styling(self):
         self.browser.get(self.live_server_url)
         self.browser.set_window_size(1024, 768)
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=10  )
+        inputbox.send_keys('testing')
+        inputbox.send_keys(Keys.ENTER)
         inputbox = self.browser.find_element(By.ID, 'id_new_item')
         self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=10  )
 

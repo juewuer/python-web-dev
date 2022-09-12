@@ -8,3 +8,6 @@
 
 ## 迁移数据库
 > python3 manage.py makemigrations
+
+## 收集静态文件
+> python3 manage.py collectstatic
