@@ -131,3 +131,5 @@ dmypy.json
 
 # idea projects file
 */.idea
+/superlists/lists/static/bootstrap-5.2.1
+/superlists/static

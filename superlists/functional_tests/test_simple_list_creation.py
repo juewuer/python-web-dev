@@ -1,54 +1,22 @@
 import sys
 import time
 import os
-from django.test import LiveServerTestCase
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+import django
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-import unittest
-import pytest
 
-import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "superlists.settings")
-django.setup()
+
+from .base import FunctionalTest
+
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", "superlists.settings")
+#django.setup()
 from lists.models import Item
 
-
-class NewVistorTest(StaticLiveServerTestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        for arg in sys.argv:
-            if 'liveserver' in arg:
-                cls.server_url = f'http://{arg.split("=")[1]}'
-                return
-        super().setUpClass()
-        cls.server_url = cls.live_server_url
-
-
-    @classmethod
-    def tearDownClass(cls):
-        if cls.server_url  == cls.live_server_url:
-            super().tearDownClass()
-
-    def setUp(self):
-        service = Service('d://chromedriver')
-        option = webdriver.ChromeOptions()
-        self.browser = webdriver.Chrome(service=service, options=option)
-        # self. = self.driver
-        # self.url = self.live_server_url
-
-    def tearDown(self):
-        self.browser.quit()
-
-    def check_for_row_in_list_table(self, content):
-        table = self.browser.find_element(By.ID, 'id_list_table')
-        rows = table.find_elements(By.TAG_NAME, 'tr')
-        assert any([content in row.text for row in rows])
-
+class NewVistorTest(FunctionalTest):
     def test_can_start_a_list_and_retrieve_it_later(self):
         self.browser.get(self.server_url)
 
@@ -106,16 +74,3 @@ class NewVistorTest(StaticLiveServerTestCase):
         assert "Buy peacock feathers" not in page_text
         assert "Use peacock feathers to make a fly" not in page_text
 
-    def test_0002_layout_and_styling(self):
-        self.browser.get(self.server_url)
-        self.browser.set_window_size(1024, 768)
-        inputbox = self.browser.find_element(By.ID, 'id_new_item')
-        self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=10  )
-        inputbox.send_keys('testing')
-        inputbox.send_keys(Keys.ENTER)
-        inputbox = self.browser.find_element(By.ID, 'id_new_item')
-        self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=10  )
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
