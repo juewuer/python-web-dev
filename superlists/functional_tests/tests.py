@@ -1,3 +1,4 @@
+import sys
 import time
 import os
 from django.test import LiveServerTestCase
@@ -17,12 +18,28 @@ from lists.models import Item
 
 
 class NewVistorTest(StaticLiveServerTestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                cls.server_url = f'http://{arg.split("=")[1]}'
+                return
+        super().setUpClass()
+        cls.server_url = cls.live_server_url
+
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url  == cls.live_server_url:
+            super().tearDownClass()
+
     def setUp(self):
         service = Service('d://chromedriver')
         option = webdriver.ChromeOptions()
         self.browser = webdriver.Chrome(service=service, options=option)
         # self. = self.driver
-        self.url = self.live_server_url
+        # self.url = self.live_server_url
 
     def tearDown(self):
         self.browser.quit()
@@ -33,7 +50,7 @@ class NewVistorTest(StaticLiveServerTestCase):
         assert any([content in row.text for row in rows])
 
     def test_can_start_a_list_and_retrieve_it_later(self):
-        self.browser.get(self.url)
+        self.browser.get(self.server_url)
 
         assert "To-Do" in self.browser.title
         header_text = self.browser.find_element(By.TAG_NAME, 'h1').text
@@ -53,7 +70,7 @@ class NewVistorTest(StaticLiveServerTestCase):
         self.check_for_row_in_list_table('Buy peacock feathers')
 
         # second
-        self.browser.get(self.url)
+        self.browser.get(self.server_url)
         inputbox = self.browser.find_element(By.ID, 'id_new_item')
         inputbox.send_keys('Use peacock feathers to make a fly')
         inputbox.send_keys(Keys.ENTER)
@@ -72,7 +89,7 @@ class NewVistorTest(StaticLiveServerTestCase):
         option = webdriver.ChromeOptions()
         self.browser = webdriver.Chrome(service=service, options=option)
 
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         page_text = self.browser.find_element(By.TAG_NAME, 'body').text
         assert "Buy peacock feathers" not in page_text
         assert "Use peacock feathers to make a fly" not in page_text
@@ -90,7 +107,7 @@ class NewVistorTest(StaticLiveServerTestCase):
         assert "Use peacock feathers to make a fly" not in page_text
 
     def test_0002_layout_and_styling(self):
-        self.browser.get(self.live_server_url)
+        self.browser.get(self.server_url)
         self.browser.set_window_size(1024, 768)
         inputbox = self.browser.find_element(By.ID, 'id_new_item')
         self.assertAlmostEqual(inputbox.location['x']+inputbox.size['width']/2, 512, delta=10  )
