@@ -23,7 +23,7 @@ class NewVistorTest(FunctionalTest):
         inputbox = self.browser.find_element(By.ID, 'id_new_item')
         inputbox.send_keys(Keys.ENTER)
 
-        error = self.browser.find_element(By=By.CSS_SELECTOR, value='.has-error')
+        error = self.browser.find_element(by=By.CSS_SELECTOR, value='.has-error')
         self.assertEqual(error.text, "You can't have an empty list item")
 
         self.browser.find_element(By.ID, 'id_new_item').send_keys("Buy milk")
@@ -32,7 +32,7 @@ class NewVistorTest(FunctionalTest):
         self.browser.find_element(By.ID, 'id_new_item').send_keys("\n")
 
         self.check_for_row_in_list_table("Buy milk")
-        error = self.browser.find_element(By=By.CSS_SELECTOR, value='.has-error')
+        error = self.browser.find_element(By.CSS_SELECTOR, value='.has-error')
         self.assertEqual(error.text, "You can't have an empty list item")
 
         self.browser.find_element(By.ID, 'id_new_item').send_keys("Make Tea\n")
