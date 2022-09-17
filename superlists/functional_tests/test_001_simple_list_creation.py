@@ -25,28 +25,28 @@ class NewVistorTest(FunctionalTest):
         # header_text = self.browser.find_element_by_tag_name('h1').text
         assert 'To-Do' in header_text
 
-        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox = self.browser.find_element(By.ID, 'id_text')
         assert inputbox.get_attribute('placeholder') == 'Enter a to-do item'
 
         inputbox.send_keys('Buy peacock feathers')
         inputbox.send_keys(Keys.ENTER)
         edith_list_url = self.browser.current_url
         time.sleep(3)
-        print(f'{edith_list_url =}')
+        # print(f'{edith_list_url =}')
         assert '/lists/' in edith_list_url
 
         self.check_for_row_in_list_table('Buy peacock feathers')
 
         # second
         self.browser.get(self.server_url)
-        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox = self.browser.find_element(By.ID, 'id_text')
         inputbox.send_keys('Use peacock feathers to make a fly')
         inputbox.send_keys(Keys.ENTER)
 
         table = self.browser.find_element(By.ID, 'id_list_table')
         rows = table.find_elements(By.TAG_NAME, 'tr')
-        for row in rows:
-            print(f'  -----------{row.text}')
+        # for row in rows:
+        #    print(f'  -----------{row.text}')
 
         self.check_for_row_in_list_table('Use peacock feathers to make a fly')
 
@@ -62,12 +62,12 @@ class NewVistorTest(FunctionalTest):
         assert "Buy peacock feathers" not in page_text
         assert "Use peacock feathers to make a fly" not in page_text
 
-        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox = self.browser.find_element(By.ID, 'id_text')
         inputbox.send_keys('By milk')
         inputbox.send_keys(Keys.ENTER)
         francis_list_url = self.browser.current_url
         assert '/lists/' in francis_list_url
-        print(f'{edith_list_url =} {francis_list_url =}')
+        # print(f'{edith_list_url =} {francis_list_url =}')
         assert francis_list_url != edith_list_url
 
         page_text = self.browser.find_element(by=By.TAG_NAME, value='body').text
