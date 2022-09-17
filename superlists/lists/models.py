@@ -15,3 +15,5 @@ class List(models.Model):
 class Item(models.Model):
     text = models.TextField(blank=False)
     list = models.ForeignKey('List', on_delete=models.CASCADE, default=None)
+    class Meta:
+        unique_together = ('list', 'text')

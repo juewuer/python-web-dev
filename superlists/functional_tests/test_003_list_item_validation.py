@@ -40,3 +40,17 @@ class NewVistorTest(FunctionalTest):
         self.check_for_row_in_list_table("Buy milk")
         self.check_for_row_in_list_table("Make Tea")
 
+    def test_0002_cannot_add_duplicate_items(self):
+        self.browser.get(self.server_url)
+        print(f'test_0001_cannot_add_empty_list_items: {self.server_url = }')
+        inputbox = self.browser.find_element(By.ID, 'id_text')
+        inputbox.send_keys("Buy wellies\n")
+        self.check_for_row_in_list_table("Buy wellies")
+
+        inputbox = self.browser.find_element(By.ID, 'id_text')
+        inputbox.send_keys("Buy wellies\n")
+        self.check_for_row_in_list_table("Buy wellies")
+        error = self.browser.find_element(By.CSS_SELECTOR, value='.has-error')
+        print(f'test_0002_cannot_add_duplicate_items {error.text = }')
+        self.assertEqual(error.text, "Youve already got this in your list")
+
