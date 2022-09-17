@@ -6,7 +6,7 @@ from django.utils.html import escape
 
 from lists.views import home_page, view_list
 from lists.models import Item, List
-from lists.forms import STR_EMPYT_LIST_ERROR, ItemForm
+from lists.forms import STR_EMPYT_LIST_ERROR, ItemForm, ExistingListItemForm
 
 
 # Create your tests here.
@@ -59,6 +59,12 @@ class ListViewTest(TestCase):
 
         self.assertTemplateUsed(response, 'list.html')
 
+    def test_0002a_users_list_template(self):
+        list_ = List.objects.create()
+        response = self.client.get(f'/lists/{list_.id}/')
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
+        self.assertContains(response, 'name="text"')
+
     def test_0003_display_only_items_for_that_list(self):
         list1 = List.objects.create()
         Item.objects.create(text='itemey 1.1', list=list1)
@@ -99,7 +105,7 @@ class ListViewTest(TestCase):
         self.assertTemplateUsed(response, 'list.html')
 
         content = response.content.decode("utf-8-sig").encode('utf-8')
-        print(f'test_0006_validation_error_end_up_on_list_page {type(content) =}, {content}')
+        # print(f'test_0006_validation_error_end_up_on_list_page {type(content) =}, {content}')
 
         self.assertContains(response, escape("You can't have an empty list item"))
 
@@ -118,21 +124,21 @@ class ListViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'list.html')
 
-    def test_0008_invalid_input_passes_form_to_template(self):
+    def test_0009_invalid_input_passes_form_to_template(self):
         response = self.post_invalid_input()
-        self.assertIsInstance(response.context['form'], ItemForm)
+        self.assertIsInstance(response.context['form'], ExistingListItemForm)
 
-    def test_0008_invalid_input_shows_error_on_page(self):
+    def test_0010_invalid_input_shows_error_on_page(self):
         response = self.post_invalid_input()
         self.assertContains(response, escape(STR_EMPYT_LIST_ERROR))
 
 
 class NewListTest(TestCase):
     def test_0001_saving_a_POST_request(self):
-        print(f'Before post')
+        # print(f'Before post')
         self.client.post('/lists/new', data={'text': 'A new list item'})
 
-        print(f'{Item.objects.count()}, {Item.objects =}')
+        # print(f'{Item.objects.count()}, {Item.objects =}')
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item')
@@ -168,8 +174,8 @@ class NewItemTest(TestCase):
         list1 = List.objects.create()
         response = self.client.post(f'/lists/{list1.id}/',
                                     data={'text': 'A new list item for existing list'})
-        print(f'test_0001_can_save_a_POST_request_to_an_existing_list: {response.status_code}, {response = }')
-        print(f'{list(Item.objects.all()) = }')
+        # print(f'test_0001_can_save_a_POST_request_to_an_existing_list: {response.status_code}, {response = }')
+        # print(f'{list(Item.objects.all()) = }')
         self.assertEqual(Item.objects.count(), 1)
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new list item for existing list')

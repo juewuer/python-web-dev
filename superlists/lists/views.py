@@ -16,10 +16,10 @@ def home_page(request):
 @csrf_exempt
 def view_list(request, list_id=None):
     list_ = List.objects.get(id=list_id)
-    form = ItemForm()
+    form = ExistingListItemForm(for_list=list_)
     data = {}
     if request.method == 'POST':
-        form = ItemForm(data=request.POST)
+        form = ExistingListItemForm(for_list=list_, data=request.POST)
         if form.is_valid():
             form.save(for_list=list_)
             return redirect(list_)
@@ -30,10 +30,10 @@ def view_list(request, list_id=None):
 @csrf_exempt
 def new_list(request):
     form = ItemForm(data=request.POST)
-    print(f'{form = }, {form.is_valid() = }')
+    # print(f'{form = }, {form.is_valid() = }')
     error = STR_EMPYT_LIST_ERROR
     if form.is_valid():
-        print(f'new_list: to create form')
+        # print(f'new_list: to create form')
         list_ = List.objects.create()
         form.save(for_list=list_)
         return redirect(list_)

@@ -6,14 +6,17 @@ from django.template.loader import render_to_string
 from lists.views import home_page, view_list
 from lists.models import Item, List
 from django.core.exceptions import ValidationError
-
+from django.db.utils import IntegrityError
 
 # Create your tests here.
 
-class ListAndItemModelTest(TestCase):
+class ItemModelTest(TestCase):
     def test_default_text(self):
         item = Item()
         self.assertEqual(item.text, "")
+
+class ListModelTest(TestCase):
+
 
     def test_item_is_related_to_list(self):
         list_ = List.objects.create()
@@ -54,11 +57,15 @@ class ListAndItemModelTest(TestCase):
             item.full_clean()
 
     #
-    def test_0003_cannot_save_empty_list_items(self):
+    def test_0003_duplicate_items_are_invalid(self):
         list_ = List.objects.create()
         Item.objects.create(list=list_, text='bla')
-        with self.assertRaises(ValidationError):
-            item = Item.objects.create(list=list_, text='bla')
+        with self.assertRaises(IntegrityError):
+            try:
+                item = Item.objects.create(list=list_, text='bla')
+            except Exception as e:
+                print(f'{type(e) =}, {e =}')
+                raise e
             item.full_clean()
 
     def test_0004_can_save_same_item_to_different_lists(self):
