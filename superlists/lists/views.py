@@ -23,6 +23,7 @@ def view_list(request, list_id=None):
         if form.is_valid():
             Item.objects.create(text=request.POST["text"], list=list_)
             return redirect(list_)
+
     return render(request, 'list.html', {'list': list_, "form": form})
 
 
@@ -30,11 +31,17 @@ def view_list(request, list_id=None):
 def new_list(request):
     form = ItemForm(data=request.POST)
     print(f'{form = }, {form.is_valid() = }')
+    error = STR_EMPYT_LIST_ERROR
     if form.is_valid():
-        print(f'new_list: to create form')
-        list_ = List.objects.create()
-        print(f'new_list: {request.POST =}')
-        item = Item.objects.create(text=request.POST["text"], list=list_)
-        return redirect(list_)
+        try:
+            print(f'new_list: to create form')
+            list_ = List.objects.create()
+            print(f'new_list: {request.POST =}')
+            item = Item.objects.create(text=request.POST["text"], list=list_)
+            error = None
+            return redirect(list_)
+        except ValidationError:
+
+            return render(request, 'home.html', {"error": error})
     else:
-        return render(request, 'home.html', {"form": form})
+        return render(request, 'home.html', {"form": form,"error": error})

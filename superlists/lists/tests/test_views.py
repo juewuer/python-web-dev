@@ -104,6 +104,29 @@ class ListViewTest(TestCase):
         self.assertContains(response, escape("You can't have an empty list item"))
 
 
+    def post_invalid_input(self):
+        list_ = List.objects.create()
+        response = self.client.post(f'/lists/{list_.id}/', data={"text": ''})
+        return response
+
+    def test_0007_invalid_input_nothing_saved_to(self):
+        self.post_invalid_input()
+        self.assertEqual(Item.objects.count(), 0)
+
+    def test_0008_invalid_input_renders_list_template(self):
+        response = self.post_invalid_input()
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'list.html')
+
+    def test_0008_invalid_input_passes_form_to_template(self):
+        response = self.post_invalid_input()
+        self.assertIsInstance(response.context['form'], ItemForm)
+
+    def test_0008_invalid_input_shows_error_on_page(self):
+        response = self.post_invalid_input()
+        self.assertContains(response, escape(STR_EMPYT_LIST_ERROR))
+
+
 class NewListTest(TestCase):
     def test_0001_saving_a_POST_request(self):
         print(f'Before post')
