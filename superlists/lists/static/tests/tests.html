@@ -13,11 +13,30 @@
         <div class="has-error">Error text</div>
     </form>
 </div>
-<script src="qunit.js"></script>
 <script src="../jquery/jquery.js"></script>
-
-
+<script src="qunit.js"></script>
+<script src="../list.js"></script>
 <script>
+    QUnit.log(details => {
+        if (details.result) {
+            return;
+        }
+
+        let output = `[FAILED] ${details.module} > ${details.name}`;
+
+        if (details.message) {
+            output += `: ${details.message}`;
+        }
+        if (details.actual) {
+            output += `\nexpected: ${details.expected}\nactual: ${details.actual}`;
+        }
+        if (details.source) {
+            output += `\n${details.source}`;
+        }
+
+        console.log(output);
+    });
+
 
     QUnit.module('smoke test', function () {
         QUnit.test('has error', function (assert) {
@@ -30,6 +49,22 @@
             $('.has-error').hide();
             assert.equal($('.has-error').is(':visible'), false);
         });
+        QUnit.test('errror should be hidden on keypress', function (assert) {
+            assert.equal($('.has-error').is(':visible'), true);
+            console.log("testStart");
+            $('input').focus();
+            var e = $.Event("keypress", { which: 65, keyCode: 65 });
+            console.log(e)
+            $('input').trigger(e);
+            $( 'input').keypress();
+            $('input').trigger('keypress');
+
+            //$('input').trigger('keypress');
+            //$("input").triggerHandler("keypress");
+            // $('.has-error').hide();
+            assert.equal($('.has-error').is(':visible'), false);
+        });
+
     });
 
 
@@ -92,5 +127,6 @@
 
 
 </script>
+
 </body>
 </html>

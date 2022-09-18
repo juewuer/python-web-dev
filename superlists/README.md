@@ -11,3 +11,12 @@
 
 ## 收集静态文件
 > python3 manage.py collectstatic --noinput
+
+## 打标签发布
+```bash
+git tag -f LIVE
+export TAG=`data +SUPERLIST-%F/%H%M`
+git tag $TAG
+git push -f origin LIVE TAG
+
+```
