@@ -7,9 +7,32 @@
 </head>
 <body>
 <div id="qunit"></div>
-<div id="qunit-fixture"></div>
+<div id="qunit-fixture">
+    <form>
+        <input name="text"/>
+        <div class="has-error">Error text</div>
+    </form>
+</div>
 <script src="qunit.js"></script>
+<script src="../jquery/jquery.js"></script>
+
+
 <script>
+
+    QUnit.module('smoke test', function () {
+        QUnit.test('has error', function (assert) {
+            assert.equal($('.has-error').is(':visible'), true);
+            $('.has-error').hide();
+            assert.equal($('.has-error').is(':visible'), false);
+        });
+        QUnit.test('has errror show', function (assert) {
+            assert.equal($('.has-error').is(':visible'), true);
+            $('.has-error').hide();
+            assert.equal($('.has-error').is(':visible'), false);
+        });
+    });
+
+
     function add(a, b) {
         return a + b;
     }
@@ -41,7 +64,6 @@
     });
 
 
-
     QUnit.module('module E', {
         before: function () {
             // prepare something once for all tests
@@ -67,7 +89,6 @@
             assert.true(true, 'this is also fine');
         });
     });
-
 
 
 </script>
