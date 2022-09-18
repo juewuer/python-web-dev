@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Javascript Tests</title>
+    <link href="qunit.css" rel="stylesheet">
+</head>
+<body>
+<div id="qunit"></div>
+<div id="qunit-fixture"></div>
+<script src="qunit.js"></script>
+<script>
+    function add(a, b) {
+        return a + b;
+    }
+
+    QUnit.module('add', function () {
+        QUnit.test('two numbers', function (assert) {
+            assert.equal(add(1, 2), 3);
+        });
+    });
+
+    QUnit.module('Group A');
+
+    QUnit.test('basic test example 1', function (assert) {
+        assert.true(true, 'this is fine');
+    });
+    QUnit.test('basic test example 2', function (assert) {
+        assert.true(true, 'this is also fine');
+    });
+
+    const {test} = QUnit;
+
+    QUnit.module('Group C');
+
+    test('basic test example', assert => {
+        assert.true(true, 'this is fine');
+    });
+    test('basic test example 2', assert => {
+        assert.true(true, 'this is also fine');
+    });
+
+
+
+    QUnit.module('module E', {
+        before: function () {
+            // prepare something once for all tests
+        },
+        beforeEach: function () {
+            // prepare something before each test
+        },
+        afterEach: function () {
+            // clean up after each test
+        },
+        after: function () {
+            // clean up once after all tests are done
+        }
+    });
+
+
+    QUnit.module('Group F', hooks => {
+        test('basic test example', assert => {
+            assert.true(true, 'this is fine');
+        });
+
+        test('basic test example 2', assert => {
+            assert.true(true, 'this is also fine');
+        });
+    });
+
+
+
+</script>
+</body>
+</html>
